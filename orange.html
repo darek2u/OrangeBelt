@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Judo Flashcards</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.header {
+  text-align: center;
+  padding: 10px;
+  font-weight: bold;
+}
+
+.card-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  width: 85%;
+  height: 60%;
+  perspective: 1000px;
+}
+
+.inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s;
+}
+
+.flip .inner {
+  transform: rotateY(180deg);
+}
+
+.face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  backface-visibility: hidden;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.front {
+  background: #222;
+}
+
+.back {
+  background: #2ecc71;
+  color: #000;
+  transform: rotateY(180deg);
+}
+
+.footer {
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  opacity: 0.8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header" id="progress">1 / 10</div>
+
+<div class="card-container">
+  <div class="card" id="card">
+    <div class="inner" id="inner">
+      <div class="face front" id="front"></div>
+      <div class="face back" id="back"></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">Tap = flip • Swipe = next/prev</div>
+
+<script>
+const cards = [
+  ["Kosoto-gake", "Minor Outer Hook Throw"],
+  ["Kosoto-gari", "Minor Outer Reaping Throw"],
+  ["Kouchi-gari", "Minor Inner Reaping Throw"],
+  ["Morote-seoi-nage", "Two-Handed Shoulder Throw"],
+  ["Ogoshi", "Major Hip Throw"],
+  ["Osoto-gari", "Major Outer Reaping Throw"],
+  ["Seoi-otoshi", "Shoulder Drop Throw"],
+  ["Tai-otoshi", "Body Drop Throw"],
+  ["Tsuri-komi-goshi", "Drawing Hip Throw"],
+  ["Yoko-shiho-gatame", "Side Four Quarters Hold"]
+];
+
+let index = 0;
+let flipped = false;
+
+const front = document.getElementById("front");
+const back = document.getElementById("back");
+const card = document.getElementById("card");
+const progress = document.getElementById("progress");
+
+function renderCard() {
+  front.textContent = cards[index][0];
+  back.textContent = cards[index][1];
+  progress.textContent = (index + 1) + " / " + cards.length;
+  card.classList.remove("flip");
+  flipped = false;
+}
+
+renderCard();
+
+// TAP = flip
+card.addEventListener("click", () => {
+  card.classList.toggle("flip");
+  flipped = !flipped;
+});
+
+// SWIPE
+let startX = 0;
+
+card.addEventListener("touchstart", e => {
+  startX = e.touches[0].clientX;
+});
+
+card.addEventListener("touchend", e => {
+  let endX = e.changedTouches[0].clientX;
+  let diff = startX - endX;
+
+  if (Math.abs(diff) > 50) {
+    if (diff > 0) {
+      // swipe left → next
+      index = (index + 1) % cards.length;
+    } else {
+      // swipe right → prev
+      index = (index - 1 + cards.length) % cards.length;
+    }
+    renderCard();
+  }
+});
+</script>
+
+</body>
+</html>
